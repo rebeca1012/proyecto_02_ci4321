@@ -1,4 +1,4 @@
-## Proyecto 01 - CI4321
+## Proyecto 02 - CI4321
 
 #### Alumnos:
 ##### Rebeca Ledesma, 15-10771
