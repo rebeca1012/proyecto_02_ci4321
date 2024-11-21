@@ -4,6 +4,8 @@ import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/thr
 import { addFloor } from './floor';
 import { addSky } from './sky'
 import { createObstacleBox, createCircularTarget } from './obstacles';
+import { generateRotationMatrix, generateTranslationMatrix } from './transformationAssistance';
+
 //defining scene, camera and renderer
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -92,6 +94,7 @@ class parabolicProjectile extends Projectile {
 //Projectile pooling
 const projectiles = [];
 
+//Tank class with a constructor that takes color and position as arguments
 class Tank {
 	constructor(tankColor, tankBasePosition){
 		//creating a rectangular tank base
@@ -135,51 +138,6 @@ class Tank {
 
 	}
 }	
-
-//function that creates a basic tank of the specified color in the specified position
-function makeTank(tankColor, tankBasePosition){
-	//creating a rectangular tank base
-	const baseGeometry = new THREE.BoxGeometry( 2, 1, 2);
-	//creating a platform on top for more turret range of movement
-	const platformGeometry = new THREE.CylinderGeometry(0.75, 0.75, 0.6, 16);
-	//creating a sphere for the turret base
-	const tankPivotGeometry = new THREE.SphereGeometry(0.75,32,16);
-	//creating cilinder for the turret
-	const turretGeometry = new THREE.CylinderGeometry(0.18, 0.18, 1.3, 16);
-
-	//creating respective meshes
-	//each position will be relative to its parent in the scenegraph
-	const tankBase = makeInstance(baseGeometry, tankColor, tankBasePosition);
-	const tankPlatform = makeInstance(platformGeometry, tankColor, {x:0, y:0.6, z:0});
-	const tankPivot = makeInstance(tankPivotGeometry, tankColor, {x:0, y:0.6, z:0});
-	const tankTurret = makeInstance(turretGeometry,tankColor, {x: 0, y: 0.5, z: 0});
-
-	//mounting point for projectile firing
-	//const turretEnd = makeInstance(new THREE.SphereGeometry(0.05, 8, 8), 0x00ff00, {x: 0, y: 0.65, z: 0});
-	const turretEnd = new THREE.Object3D();
-	turretEnd.position.set(0, 0.65, 0);
-
-	//rotating the pivot so initially the turret will be parallel to the ground
-	const initialRotationMatrix = generateRotationMatrix(new THREE.Vector3(1, 0, 0), tankPivot, -Math.PI / 2, true);
-	tankPivot.applyMatrix4(initialRotationMatrix);
-	
-	//compensating the previous rotation in the mounting point for
-	//correct projectile firing
-	const rotationMatrix = generateRotationMatrix(new THREE.Vector3(1, 0, 0), turretEnd, -Math.PI / 2, true);
-	turretEnd.applyMatrix4(rotationMatrix);
-	
-	tankTurret.add(turretEnd);
-
-	// putting the scenegraph (tree) together
-	tankPivot.add(tankTurret);
-	tankPlatform.add(tankPivot)
-	tankBase.add(tankPlatform);
-
-	tankBase.pivot = tankPivot; // I want to access once the tank is made
-
-	return tankBase;
-}
-  
 
 //creating tank, assigning tank color and base position
 const tankColor = 0x5B53FF; 
@@ -375,50 +333,6 @@ function handleInput(deltaTime) {
 			lastSwitchTime = currentTime;
 		}
 	}
-}
-
-function generateRotationMatrix(axis, element, angle, localRotation) {
-
-	if (localRotation) {
-		//applying the quaternion to the axis of rotation (global) returns the axis of the element
-		axis = axis.applyQuaternion(element.quaternion).normalize();
-	} 
-
-	// Create a translation matrix to move the element to the origin before applying rotation
-	const translationToOrigin = new THREE.Matrix4().makeTranslation(
-		-element.position.x,
-		-element.position.y,
-		-element.position.z
-	)
-	// Create a translation matrix to move the element back to its original position after rotating
-	const translationBack = new THREE.Matrix4().makeTranslation(
-		element.position.x,
-		element.position.y,
-		element.position.z
-	)
-	// Generates the rotation matrix
-	const rotation = new THREE.Matrix4().makeRotationAxis(axis, angle);
-	//console.log("Rotation Matrix:", rotation.elements);
-
-	// Composes everything to return the rotation (+ translation) matrix to use
-	return new THREE.Matrix4()
-		.multiply(translationBack)
-		.multiply(rotation)
-		.multiply(translationToOrigin);
-
-}
-
-function generateTranslationMatrix(direction, element, distance, localCoordinates) {
-
-	if (localCoordinates) {
-		direction = direction.applyQuaternion(element.quaternion).normalize();
-	}
-	const translation = new THREE.Matrix4().makeTranslation(distance * direction.x, distance * direction.y, distance * direction.z);
-	//console.log("translation Matrix:", translation.elements);
-
-	// Create a rotation matrix around the local y-axis
-	return new THREE.Matrix4()
-		.multiply(translation)
 }
 
 function fireProjectile(position, direction) {
