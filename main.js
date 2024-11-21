@@ -92,6 +92,50 @@ class parabolicProjectile extends Projectile {
 //Projectile pooling
 const projectiles = [];
 
+class Tank {
+	constructor(tankColor, tankBasePosition){
+		//creating a rectangular tank base
+		const baseGeometry = new THREE.BoxGeometry( 2, 1, 2);
+		//creating a platform on top for more turret range of movement
+		const platformGeometry = new THREE.CylinderGeometry(0.75, 0.75, 0.6, 16);
+		//creating a sphere for the turret base
+		const tankPivotGeometry = new THREE.SphereGeometry(0.75,32,16);
+		//creating cilinder for the turret
+		const turretGeometry = new THREE.CylinderGeometry(0.18, 0.18, 1.3, 16);
+	
+		//creating respective meshes
+		//each position will be relative to its parent in the scenegraph
+		this.tankBase = makeInstance(baseGeometry, tankColor, tankBasePosition);
+		this.tankPlatform = makeInstance(platformGeometry, tankColor, {x:0, y:0.6, z:0});
+		this.tankPivot = makeInstance(tankPivotGeometry, tankColor, {x:0, y:0.6, z:0});
+		this.tankTurret = makeInstance(turretGeometry,tankColor, {x: 0, y: 0.5, z: 0});
+	
+		//mounting point for projectile firing
+		//const turretEnd = makeInstance(new THREE.SphereGeometry(0.05, 8, 8), 0x00ff00, {x: 0, y: 0.65, z: 0});
+		this.turretEnd = new THREE.Object3D();
+		this.turretEnd.position.set(0, 0.65, 0);
+	
+		//rotating the pivot so initially the turret will be parallel to the ground
+		const initialRotationMatrix = generateRotationMatrix(new THREE.Vector3(1, 0, 0), this.tankPivot, -Math.PI / 2, true);
+		this.tankPivot.applyMatrix4(initialRotationMatrix);
+		
+		//compensating the previous rotation in the mounting point for
+		//correct projectile firing
+		const rotationMatrix = generateRotationMatrix(new THREE.Vector3(1, 0, 0), this.turretEnd, -Math.PI / 2, true);
+		this.turretEnd.applyMatrix4(rotationMatrix);
+		
+		this.tankTurret.add(this.turretEnd);
+	
+		// putting the scenegraph (tree) together
+		this.tankPivot.add(this.tankTurret);
+		this.tankPlatform.add(this.tankPivot)
+		this.tankBase.add(this.tankPlatform);
+	
+		this.tankBase.pivot = this.tankPivot; // I want to access once the tank is made
+
+	}
+}	
+
 //function that creates a basic tank of the specified color in the specified position
 function makeTank(tankColor, tankBasePosition){
 	//creating a rectangular tank base
@@ -140,7 +184,10 @@ function makeTank(tankColor, tankBasePosition){
 //creating tank, assigning tank color and base position
 const tankColor = 0x5B53FF; 
 const tankBasePosition = new THREE.Vector3(0, 0, 0);
-const tank = makeTank(tankColor, tankBasePosition);
+//const tank = makeTank(tankColor, tankBasePosition);
+const completeTank = new Tank(tankColor, tankBasePosition);
+const tank = completeTank.tankBase;
+
 scene.add(tank);
 
 
@@ -216,6 +263,7 @@ window.addEventListener('keyup', (event) => {
 //Input Handling
 const tankPivot = tank.children[0].children[0];
 const tankTurretEnd = tankPivot.children[0].children[0];
+
 
 const rotationSpeed = 1;
 const movementSpeed = 1;
