@@ -17,10 +17,19 @@ document.body.appendChild( renderer.domElement );
 
 //defining lights: directional light
 const lightColor = 0xFFFFFF;
-const lightIntensity = 1; 
+const lightIntensity = 0.5; 
 const light = new THREE.DirectionalLight(lightColor, lightIntensity);
 light.position.set(1, 4, 3); //the target remains at (0, 0, 0)
 scene.add(light);
+
+const movingLight = new THREE.SpotLight(lightColor, lightIntensity);
+movingLight.position.set(0, 6.5, -1.5);
+movingLight.target.position.set(0, 0, -1.5);
+movingLight.angle = Math.PI / 6; // Adjust the angle to control the spread of the light
+movingLight.penumbra = 0.1; // Adjust the penumbra to soften the edges of the light
+movingLight.castShadow = true; // Enable shadows for the SpotLight
+scene.add(movingLight);
+scene.add(movingLight.target);
 
 //ambient light: white light, 50% intensity
 const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.5);
