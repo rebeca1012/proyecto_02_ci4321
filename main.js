@@ -75,8 +75,8 @@ obstacles.push(target2);
 addFloor(scene);
 addSky(scene, renderer, camera);
 
-camera.position.z = 5;
-camera.position.y = 1;
+camera.position.set(0, 3, 5);
+camera.lookAt(0, 0, 0);
 
 //Handling events
 //Inputs by polling
