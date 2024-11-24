@@ -3,20 +3,33 @@ import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/thr
 export function addFloor(scene) {
   // Create TextureLoader
   const loader = new THREE.TextureLoader();
-
-  const texture = loader.load('../static/dustyGround.png');
   
-  // repeat texture so it doesn't look pixelated and terrible
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(10, 10);
+  function onError(err) {
+    console.error('An error occurred loading the texture:', err);
+  }
 
-  // Plan geometry
-  const geometry = new THREE.PlaneGeometry(100, 100);
+  // Load all textures
+  const colorMap = loader.load('./static/Ground080_1K-JPG_Color.jpg', undefined, undefined, onError);
+  const normalMap = loader.load('./static/Ground080_1K-JPG_NormalGL.jpg', undefined, undefined, onError);
+  const roughnessMap = loader.load('./static/Ground080_1K-JPG_Roughness.jpg', undefined, undefined, onError);
+  const aoMap = loader.load('./static/Ground080_1K-JPG_AmbientOcclusion.jpg', undefined, undefined, onError);
+  
+  // configure texture and repeat so it doesn't look pixelated and terrible
+  const textures = [colorMap, normalMap, roughnessMap, aoMap];
+  textures.forEach(texture => {
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(10, 10);
+  });
 
-  // Material with texture
+  // Plane geometry
+  const geometry = new THREE.PlaneGeometry(200, 200);
+
+  // Material with all texture maps
   const material = new THREE.MeshStandardMaterial({
-    map: texture,
+    map: colorMap,
+    normalMap: normalMap,
+    roughnessMap: roughnessMap,
+    aoMap: aoMap,
     side: THREE.DoubleSide
   });
 
@@ -31,4 +44,7 @@ export function addFloor(scene) {
 
   // Add floor to the scene 
   scene.add(floor);
+
+  console.log('Floor added to the scene');
 }
+
