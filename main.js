@@ -22,6 +22,7 @@ const light = new THREE.DirectionalLight(lightColor, lightIntensity);
 light.position.set(1, 4, 3); //the target remains at (0, 0, 0)
 scene.add(light);
 
+//defining spotlight to test that normal maps are working
 const movingLight = new THREE.SpotLight(lightColor, lightIntensity);
 movingLight.position.set(0, 6.5, -1.5);
 movingLight.target.position.set(0, 0, -1.5);
@@ -259,6 +260,7 @@ function fireProjectile(position, direction) {
 	projectiles.push(projectile);
 }
 
+let movingLightSpeed = Math.PI/2;
 //this function updates elements that dont require user input to work
 function updateElements(deltaTime){
 
@@ -281,6 +283,17 @@ function updateElements(deltaTime){
 			}
 		});
 	});
+
+	//constant movement of the spotlight
+	const lightMovement = Math.sin(movingLightSpeed) * 10;
+	movingLightSpeed += 0.5 * deltaTime;
+	
+	// Calculate the new position for the spotlight's target
+	const targetX = lightMovement // Adjust the multiplier to control the range of movement
+
+	// Apply the new position to the spotlight's target
+	movingLight.target.position.set(targetX, 0, movingLight.target.position.z);
+	movingLight.target.updateMatrixWorld(); // Ensure the target's matrix is updated
 
 
 }
