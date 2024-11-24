@@ -260,6 +260,7 @@ function fireProjectile(position, direction) {
 	projectiles.push(projectile);
 }
 
+//speed of the spotlight that updates over time inside the next function
 let movingLightSpeed = Math.PI/2;
 //this function updates elements that dont require user input to work
 function updateElements(deltaTime){
@@ -285,15 +286,13 @@ function updateElements(deltaTime){
 	});
 
 	//constant movement of the spotlight
-	const lightMovement = Math.sin(movingLightSpeed) * 10;
-	movingLightSpeed += 0.5 * deltaTime;
-	
-	// Calculate the new position for the spotlight's target
-	const targetX = lightMovement // Adjust the multiplier to control the range of movement
+	const lightMovement = Math.sin(movingLightSpeed) / 7; // Adjust the multipliar to control the range of movement
+	movingLightSpeed += deltaTime * 0.5; // Adjust the multiplier to control the speed
 
 	// Apply the new position to the spotlight's target
-	movingLight.target.position.set(targetX, 0, movingLight.target.position.z);
-	movingLight.target.updateMatrixWorld(); // Ensure the target's matrix is updated
+	// movingLight.target.position.set(targetX, 0, movingLight.target.position.z);
+	// movingLight.target.updateMatrixWorld(); // Ensure the target's matrix is updated
+	movingLight.target.position.applyMatrix4(generateTranslationMatrix(new THREE.Vector3(1, 0, 0), movingLight.target, lightMovement, true));
 
 
 }
