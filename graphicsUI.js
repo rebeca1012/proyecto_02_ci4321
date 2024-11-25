@@ -40,10 +40,10 @@ export function createCharacterSprite(character, texture) {
 
     // Calculate UV coordinates
     // We add a small offset (0.001) to prevent texture bleeding
-    const u = column / columns + 0.001
-    const v = 1 - ((row + 1) * totalCharHeight) / (rows * totalCharHeight)
-    const w = totalCharWidth / (columns * totalCharWidth)
-    const h = charHeight / (rows * totalCharHeight)
+    const u = (column * totalCharWidth) / textureWidth - 0.115
+    const v = 1 - ((row + 1) * totalCharHeight) / textureHeight + 0.01
+    const w = totalCharWidth / textureWidth
+    const h = charHeight / textureHeight
 
     // Divides the texture in sections
     // Picks the correct section

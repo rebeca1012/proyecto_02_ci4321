@@ -63,13 +63,13 @@ const textOffset = new THREE.Vector2(25, 25);
 // maps the number I want to show to the character that will actually show it
 // works for numbers 1 - 6
 const numberMapping = {
-	0: 'T', //shows nothing
-	1: 'K',
-	2: 'L',
-	3: 'M',
-	4: 'N',
-	5: 'O',
-	6: 'P'
+	0: '0', //shows nothing
+	1: '1',
+	2: '2',
+	3: '3',
+	4: '4',
+	5: '5',
+	6: '6'
 };
 
 // I will modify this later
