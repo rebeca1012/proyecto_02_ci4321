@@ -32,13 +32,9 @@ export function createCharacterSprite(character, texture) {
 
     // Divides the texture in sections
     texture.repeat.set(1 / columns, 1 / rows);
-    texture.repeat.set(charWidth / (columns * effectiveCharWidth), charHeight / (rows * effectiveCharHeight));
+    //texture.repeat.set(charWidth / (columns * effectiveCharWidth), charHeight / (rows * effectiveCharHeight));
     // Picks the correct section
     texture.offset.set(column / columns, 1 - (row + 1) / rows);
-    texture.offset.set(
-        (column * effectiveCharWidth) / (columns * effectiveCharWidth),
-        1 - ((row + 1) * effectiveCharHeight) / (rows * effectiveCharHeight)
-    );
 
     //texture.repeat.set(1, 1);
     //texture.offset.set(0, 0);
@@ -46,11 +42,7 @@ export function createCharacterSprite(character, texture) {
     console.log("Character:", character, "Column:", column, "Row:", row, "Offset:", texture.offset, "Repeat:", texture.repeat);
     console.log("Texture Clone:", texture);
 
-    const material = new THREE.SpriteMaterial({ map: texture,
-        color: 0xFFFFFF,
-        transparent: true,
-        opacity: 1
-     });
+    const material = new THREE.SpriteMaterial({ map: texture});
     const sprite = new THREE.Sprite(material);
     console.log("Material:", sprite.material);
     sprite.scale.set(charWidth*5, charHeight*5, 1); // Adjust the scale as needed
