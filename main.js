@@ -268,7 +268,7 @@ function handleInput(deltaTime) {
 }
 
 // Load snowball texture
-const textureLoader = new THREE.TextureLoader();
+
 const snowballTexture = textureLoader.load('./static/snowball.png');
 
 // Array to store snowball sprites
