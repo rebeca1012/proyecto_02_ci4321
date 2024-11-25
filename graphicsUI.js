@@ -12,8 +12,11 @@ export function createCharacterSprite(character, texture) {
     const charHeight = 7; // Height of each character in pixels
     const columns = 16; // Number of columns in the texture atlas
     const rows = 4; // Number of rows in the texture atlas
-    const paddingX = 1;
-    const paddingY = 2;
+    const characterScale = new THREE.Vector2(5, 10); // Scale of the sprite
+    //const paddingX = 1 * characterScale.x;
+    const paddingX = 0.04;
+    //const paddingY = 2 * characterScale.y;
+    const paddingY = 0.65;
 
     // Get the total size of the texture
     const textureWidth = spriteTexture.image.width;
@@ -40,8 +43,8 @@ export function createCharacterSprite(character, texture) {
 
     // Calculate UV coordinates
     // We add a small offset (0.001) to prevent texture bleeding
-    const u = (column * totalCharWidth) / textureWidth - 0.115
-    const v = 1 - ((row + 1) * totalCharHeight) / textureHeight + 0.01
+    const u = (column * totalCharWidth) / textureWidth - 0.001
+    const v = 1 - ((row + 1) * totalCharHeight) / textureHeight + 0.001
     const w = totalCharWidth / textureWidth
     const h = charHeight / textureHeight
 
@@ -65,7 +68,7 @@ export function createCharacterSprite(character, texture) {
 
     const sprite = new THREE.Sprite(material);
     //console.log("Material:", sprite.material);
-    sprite.scale.set(charWidth*5, charHeight*10, 1); // Adjust the scale as needed
+    sprite.scale.set(charWidth*characterScale.x, charHeight*characterScale.y, 1); // Adjust the scale as needed
 
     //console.log("Character:", character, "Column:", column, "Row:", row, "Offset:", texture.offset, "Repeat:", texture.repeat);
     return sprite;
