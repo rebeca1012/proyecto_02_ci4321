@@ -6,14 +6,49 @@ import { addSky } from './sky'
 import { createObstacleBox, createCircularTarget } from './obstacles';
 import { generateRotationMatrix, generateTranslationMatrix } from './transformationAssistance';
 import { Tank, Projectile, parabolicProjectile, projectileSpeed } from './tankAndProjectiles';
+import { createTextMesh } from './graphicsUI';
+
 
 //defining scene, camera and renderer
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
+// Create a new scene for the GUI
+const guiScene = new THREE.Scene();
+
+// Create an orthographic camera for the GUI
+const guiCamera = new THREE.OrthographicCamera(
+    window.innerWidth / -2, window.innerWidth / 2,
+    window.innerHeight / 2, window.innerHeight / -2,
+    0.1, 10
+);
+guiCamera.position.z = 1;
+
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
+
+// Create a simple text element for the GUI
+// const guiText = createTextMesh("Lives: 3", 0xffffff);
+// guiText.position.set(-window.innerWidth / 2 + 50, window.innerHeight / 2 - 50, 0);
+
+// gui scene rendering test
+const obstacleCounterArea = new THREE.Sprite(new THREE.SpriteMaterial({
+    color: 0xFFC080,
+    transparent: true,
+    opacity: 1
+}));
+//width and height of the obstacle counter area
+const ocAWidth = 250;
+const ocAHeight = 50;
+//offset of the obstacle counter area so it is not stuck to the borders
+const ocAOffset = new THREE.Vector2(25, 25);
+
+obstacleCounterArea.scale.set(ocAWidth, ocAHeight, 1);
+obstacleCounterArea.position.set(-window.innerWidth / 2 + ocAWidth / 2 + ocAOffset.x, window.innerHeight / 2 - ocAHeight / 2 - ocAOffset.y, 0);
+
+guiScene.add(obstacleCounterArea);
+// guiScene.add(guiText);
 
 //defining lights: directional light
 const lightColor = 0xFFFFFF;
@@ -47,7 +82,6 @@ const completeTank = new Tank(tankColor, tankBasePosition);
 const tank = completeTank.tankBase;
 
 scene.add(tank);
-
 
 // create and add obstacles
 const obstacles = [];
@@ -121,7 +155,6 @@ window.addEventListener('keyup', (event) => {
 //Input Handling
 const tankPivot = tank.children[0].children[0];
 const tankTurretEnd = tankPivot.children[0].children[0];
-
 
 const rotationSpeed = 1;
 const movementSpeed = 1;
@@ -308,9 +341,15 @@ function render(now) {
 	
 	//things that dont require input
 	updateElements(deltaTime);
-
-	renderer.render( scene, camera );
 	
+	// Render Main Scene
+	renderer.render( scene, camera );
+	renderer.autoClear = false; // Prevent clearing the renderer automatically (dont clear the main scene)
+	// Render the GUI scene
+
+    renderer.clearDepth(); // Clear the depth buffer (make sure the GUI is on top)
+    renderer.render(guiScene, guiCamera);
+
 	requestAnimationFrame(render);
 
 }
