@@ -2,11 +2,11 @@ import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/thr
 
 // Function to create a character sprite from the texture atlas
 export function createCharacterSprite(character, texture) {
-    console.log("Hola, entro.", character);
 
     // Clone the texture to prevent sharing UV modifications between sprites
     const spriteTexture = texture.clone()
     spriteTexture.needsUpdate = true
+
 
     const charWidth = 8; // Width of each character in pixels
     const charHeight = 7; // Height of each character in pixels
@@ -14,6 +14,10 @@ export function createCharacterSprite(character, texture) {
     const rows = 4; // Number of rows in the texture atlas
     const paddingX = 1;
     const paddingY = 2;
+
+    // Get the total size of the texture
+    const textureWidth = spriteTexture.image.width;
+    const textureHeight = spriteTexture.image.height;
 
     // Calculate the effective width and height of each character including padding
     const totalCharWidth = charWidth + paddingX;
@@ -51,8 +55,8 @@ export function createCharacterSprite(character, texture) {
     //texture.repeat.set(1, 1);
     //texture.offset.set(0, 0);
 
-    console.log("Character:", character, "Column:", column, "Row:", row, "Offset:", texture.offset, "Repeat:", texture.repeat);
-    console.log("Texture Clone:", texture);
+    //console.log("Character:", character, "Column:", column, "Row:", row, "Offset:", texture.offset, "Repeat:", texture.repeat);
+    //console.log("Texture Clone:", texture);
 
     const material = new THREE.SpriteMaterial({ 
         map: spriteTexture,
@@ -60,9 +64,9 @@ export function createCharacterSprite(character, texture) {
     });
 
     const sprite = new THREE.Sprite(material);
-    console.log("Material:", sprite.material);
+    //console.log("Material:", sprite.material);
     sprite.scale.set(charWidth*5, charHeight*10, 1); // Adjust the scale as needed
 
-    console.log("Character:", character, "Column:", column, "Row:", row, "Offset:", texture.offset, "Repeat:", texture.repeat);
+    //console.log("Character:", character, "Column:", column, "Row:", row, "Offset:", texture.offset, "Repeat:", texture.repeat);
     return sprite;
 }

@@ -59,8 +59,8 @@ const textHeight = 50;
 //offset of the obstacle counter area so it is not stuck to the borders
 const textOffset = new THREE.Vector2(25, 25);
 
-//This dictionary is a patch because the mapping does not work properly
-//maps the number I want to show to the character that will actually show it
+// This dictionary is a patch because the mapping does not work properly
+// maps the number I want to show to the character that will actually show it
 // works for numbers 1 - 6
 const numberMapping = {
 	0: 'T', //shows nothing
@@ -72,13 +72,14 @@ const numberMapping = {
 	6: 'P'
 };
 
-// Load the texture atlas
+// I will modify this later
 let characterSprite
+// Load the texture atlas
 const textureLoader = new THREE.TextureLoader();
 const numberTexture = textureLoader.load('./static/font8x7.png', () => {
 	console.log('Texture loaded:', numberTexture);
     // Create and add character sprites to the GUI scene
-    characterSprite = createCharacterSprite(numberMapping[4], numberTexture); // Example: create sprite for character 'A'
+    characterSprite = createCharacterSprite(numberMapping[5], numberTexture); // Example: create sprite for character 'A'
     characterSprite.position.set(-window.innerWidth / 2 + textWidth / 2 + textOffset.x, window.innerHeight / 2 - textHeight / 2 - textOffset.y, 0);
     guiScene.add(characterSprite);
 },
