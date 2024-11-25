@@ -28,58 +28,20 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-// Create a simple text element for the GUI
-// const guiText = createTextMesh("Lives: 3", 0xffffff);
-// guiText.position.set(-window.innerWidth / 2 + 50, window.innerHeight / 2 - 50, 0);
-
-
-
-// gui scene rendering test
-const obstacleCounterArea = new THREE.Sprite(new THREE.SpriteMaterial({
-    color: 0xFFC080,
-    transparent: true,
-    opacity: 1
-}));
-//width and height of the obstacle counter area
-const ocAWidth = 250;
-const ocAHeight = 50;
-//offset of the obstacle counter area so it is not stuck to the borders
-const ocAOffset = new THREE.Vector2(300, 25);
-
-
-obstacleCounterArea.scale.set(ocAWidth, ocAHeight, 1);
-obstacleCounterArea.position.set(-window.innerWidth / 2 + ocAWidth / 2 + ocAOffset.x, window.innerHeight / 2 - ocAHeight / 2 - ocAOffset.y, 0);
-
-//guiScene.add(obstacleCounterArea);
-
-
 //width and height of the obstacle counter area
 const textWidth = 250;
 const textHeight = 50;
 //offset of the obstacle counter area so it is not stuck to the borders
 const textOffset = new THREE.Vector2(25, 25);
 
-// This dictionary is a patch because the mapping does not work properly
-// maps the number I want to show to the character that will actually show it
-// works for numbers 1 - 6
-const numberMapping = {
-	0: '0', 
-	1: '1',
-	2: '2',
-	3: '3',
-	4: '4',
-	5: '5',
-	6: '6'
-};
-
-// I will modify this later
+// I will rewrite this later in the rendering loop
 let characterSprite
 // Load the texture atlas
 const textureLoader = new THREE.TextureLoader();
 const numberTexture = textureLoader.load('./static/font8x7.png', () => {
 	console.log('Texture loaded:', numberTexture);
     // Create and add character sprites to the GUI scene
-    characterSprite = createCharacterSprite(numberMapping[5], numberTexture); // Example: create sprite for character 'A'
+    characterSprite = createCharacterSprite('5', numberTexture); // Example: create sprite for character 'A'
     characterSprite.position.set(-window.innerWidth / 2 + textWidth / 2 + textOffset.x, window.innerHeight / 2 - textHeight / 2 - textOffset.y, 0);
     guiScene.add(characterSprite);
 },
@@ -354,8 +316,8 @@ function updateElements(deltaTime){
 				obstacles.splice(obstacles.indexOf(obstacle), 1);
 
 				//update obstacle counter
-				guiScene.remove(characterSprite);
-				characterSprite = createCharacterSprite(numberMapping[obstacles.length], numberTexture);
+				guiScene.remove(characterSprite);  // 48 is ASCII code for '0'
+				characterSprite = createCharacterSprite(String.fromCharCode(48 + obstacles.length), numberTexture);
 				characterSprite.position.set(-window.innerWidth / 2 + textWidth / 2 + textOffset.x, window.innerHeight / 2 - textHeight / 2 - textOffset.y, 0);
 				guiScene.add(characterSprite);
 			}
