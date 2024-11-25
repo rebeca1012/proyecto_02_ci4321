@@ -17,10 +17,20 @@ document.body.appendChild( renderer.domElement );
 
 //defining lights: directional light
 const lightColor = 0xFFFFFF;
-const lightIntensity = 1; 
+const lightIntensity = 0.5; 
 const light = new THREE.DirectionalLight(lightColor, lightIntensity);
 light.position.set(1, 4, 3); //the target remains at (0, 0, 0)
 scene.add(light);
+
+//defining spotlight to test that normal maps are working
+const movingLight = new THREE.SpotLight(lightColor, lightIntensity);
+movingLight.position.set(0, 6.5, -1.5);
+movingLight.target.position.set(0, 0, -1.5);
+movingLight.angle = Math.PI / 6; // Adjust the angle to control the spread of the light
+movingLight.penumbra = 0.1; // Adjust the penumbra to soften the edges of the light
+movingLight.castShadow = true; // Enable shadows for the SpotLight
+scene.add(movingLight);
+scene.add(movingLight.target);
 
 //ambient light: white light, 50% intensity
 const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.5);
@@ -65,8 +75,8 @@ obstacles.push(target2);
 addFloor(scene);
 addSky(scene, renderer, camera);
 
-camera.position.z = 5;
-camera.position.y = 1;
+camera.position.set(0, 3, 5);
+camera.lookAt(0, 0, 0);
 
 //Handling events
 //Inputs by polling
@@ -250,6 +260,8 @@ function fireProjectile(position, direction) {
 	projectiles.push(projectile);
 }
 
+//speed of the spotlight that updates over time inside the next function
+let movingLightSpeed = Math.PI/2;
 //this function updates elements that dont require user input to work
 function updateElements(deltaTime){
 
@@ -272,6 +284,15 @@ function updateElements(deltaTime){
 			}
 		});
 	});
+
+	//constant movement of the spotlight
+	const lightMovement = Math.sin(movingLightSpeed) / 7; // Adjust the multipliar to control the range of movement
+	movingLightSpeed += deltaTime * 0.5; // Adjust the multiplier to control the speed
+
+	// Apply the new position to the spotlight's target
+	// movingLight.target.position.set(targetX, 0, movingLight.target.position.z);
+	// movingLight.target.updateMatrixWorld(); // Ensure the target's matrix is updated
+	movingLight.target.position.applyMatrix4(generateTranslationMatrix(new THREE.Vector3(1, 0, 0), movingLight.target, lightMovement, true));
 
 
 }
