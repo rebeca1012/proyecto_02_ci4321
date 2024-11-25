@@ -50,8 +50,7 @@ const ocAOffset = new THREE.Vector2(300, 25);
 obstacleCounterArea.scale.set(ocAWidth, ocAHeight, 1);
 obstacleCounterArea.position.set(-window.innerWidth / 2 + ocAWidth / 2 + ocAOffset.x, window.innerHeight / 2 - ocAHeight / 2 - ocAOffset.y, 0);
 
-guiScene.add(obstacleCounterArea);
-// guiScene.add(guiText);
+//guiScene.add(obstacleCounterArea);
 
 
 //width and height of the obstacle counter area
@@ -60,12 +59,26 @@ const textHeight = 50;
 //offset of the obstacle counter area so it is not stuck to the borders
 const textOffset = new THREE.Vector2(25, 25);
 
+//This dictionary is a patch because the mapping does not work properly
+//maps the number I want to show to the character that will actually show it
+// works for numbers 1 - 6
+const numberMapping = {
+	0: 'T', //shows nothing
+	1: 'K',
+	2: 'L',
+	3: 'M',
+	4: 'N',
+	5: 'O',
+	6: 'P'
+};
+
 // Load the texture atlas
+let characterSprite
 const textureLoader = new THREE.TextureLoader();
 const numberTexture = textureLoader.load('./static/font8x7.png', () => {
 	console.log('Texture loaded:', numberTexture);
     // Create and add character sprites to the GUI scene
-    const characterSprite = createCharacterSprite('Q', numberTexture); // Example: create sprite for character 'A'
+    characterSprite = createCharacterSprite(numberMapping[4], numberTexture); // Example: create sprite for character 'A'
     characterSprite.position.set(-window.innerWidth / 2 + textWidth / 2 + textOffset.x, window.innerHeight / 2 - textHeight / 2 - textOffset.y, 0);
     guiScene.add(characterSprite);
 },
@@ -338,6 +351,12 @@ function updateElements(deltaTime){
 				//remove obstacle
 				scene.remove(obstacle);
 				obstacles.splice(obstacles.indexOf(obstacle), 1);
+
+				//update obstacle counter
+				guiScene.remove(characterSprite);
+				characterSprite = createCharacterSprite(numberMapping[obstacles.length], numberTexture);
+				characterSprite.position.set(-window.innerWidth / 2 + textWidth / 2 + textOffset.x, window.innerHeight / 2 - textHeight / 2 - textOffset.y, 0);
+				guiScene.add(characterSprite);
 			}
 		});
 	});

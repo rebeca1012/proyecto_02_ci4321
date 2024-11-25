@@ -61,7 +61,7 @@ export function createCharacterSprite(character, texture) {
 
     const sprite = new THREE.Sprite(material);
     console.log("Material:", sprite.material);
-    sprite.scale.set(charWidth*5, charHeight*5, 1); // Adjust the scale as needed
+    sprite.scale.set(charWidth*5, charHeight*10, 1); // Adjust the scale as needed
 
     console.log("Character:", character, "Column:", column, "Row:", row, "Offset:", texture.offset, "Repeat:", texture.repeat);
     return sprite;
