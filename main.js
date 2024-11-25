@@ -41,6 +41,7 @@ const obstacleCounterArea = new THREE.Sprite(new THREE.SpriteMaterial({
 //width and height of the obstacle counter area
 const ocAWidth = 250;
 const ocAHeight = 50;
+//offset of the obstacle counter area so it is not stuck to the borders
 const ocAOffset = new THREE.Vector2(25, 25);
 
 obstacleCounterArea.scale.set(ocAWidth, ocAHeight, 1);
