@@ -38,6 +38,36 @@ const tank = completeTank.tankBase;
 
 scene.add(tank);
 
+// Create a new scene for the GUI
+const guiScene = new THREE.Scene();
+
+// Create an orthographic camera for the GUI
+const guiCamera = new THREE.OrthographicCamera(
+    window.innerWidth / -2, window.innerWidth / 2,
+    window.innerHeight / 2, window.innerHeight / -2,
+    0.1, 10
+);
+guiCamera.position.z = 1;
+
+// Create a simple text element for the GUI
+const guiText = createTextMesh("Lives: 3", 0xffffff);
+guiText.position.set(-window.innerWidth / 2 + 50, window.innerHeight / 2 - 50, 0);
+guiScene.add(guiText);
+
+// Function to create a text mesh
+function createTextMesh(text, color) {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    context.font = 'Bold 40px Arial';
+    context.fillStyle = color;
+    context.fillText(text, 0, 40);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    const material = new THREE.SpriteMaterial({ map: texture });
+    const sprite = new THREE.Sprite(material);
+    return sprite;
+}
+
 
 // create and add obstacles
 const obstacles = [];
