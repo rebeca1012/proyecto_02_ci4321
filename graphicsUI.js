@@ -16,7 +16,7 @@ export function createCharacterSprite(character, texture) {
     //const paddingX = 1 * characterScale.x;
     const paddingX = 0.04;
     //const paddingY = 2 * characterScale.y;
-    const paddingY = 0.65;
+    const paddingY = 0.75;
 
     // Get the total size of the texture
     const textureWidth = spriteTexture.image.width;
