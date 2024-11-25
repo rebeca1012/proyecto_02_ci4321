@@ -267,30 +267,102 @@ function handleInput(deltaTime) {
 	}
 }
 
+// Load snowball texture
+const textureLoader = new THREE.TextureLoader();
+const snowballTexture = textureLoader.load('./static/snowball.png');
+
+// Array to store snowball sprites
+const snowballSprites = [];
+
+// Create text "proyectiles"
+function createProjectilesText() {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = 200;
+    canvas.height = 50;
+    
+    context.font = 'bold 24px Arial';
+    context.fillStyle = 'white';
+    context.textAlign = 'right';
+    context.fillText('Proyectiles', 190, 30);
+    
+    const texture = new THREE.CanvasTexture(canvas);
+    const material = new THREE.SpriteMaterial({ map: texture });
+    const sprite = new THREE.Sprite(material);
+    
+    const spriteWidth = 200;
+    const spriteHeight = 50;
+    sprite.scale.set(spriteWidth, spriteHeight, 1);
+    
+    // Place text beneath snowballs
+    const startX = window.innerWidth / 2 - 25; 
+    const startY = window.innerHeight / 2 - 115; 
+    
+    sprite.position.set(startX - spriteWidth / 2, startY, 0);
+    
+    return sprite;
+}
+
+// Create and add text "proyectiles" to UI
+const projectilesText = createProjectilesText();
+guiScene.add(projectilesText);
+
+// Function to add snowball to UI
+function addSnowballToUI() {
+    const spriteSize = 40;
+    const spacing = 10;
+
+	// Offset
+    const startX = window.innerWidth / 2 - spriteSize - 25; 
+    const startY = window.innerHeight / 2 - spriteSize - 25; 
+
+    const snowballSprite = new THREE.Sprite(
+        new THREE.SpriteMaterial({
+            map: snowballTexture,
+            transparent: true
+        })
+    );
+    
+    snowballSprite.scale.set(spriteSize, spriteSize, 1);
+    snowballSprite.position.set(
+        startX - (spriteSize + spacing) * snowballSprites.length,
+        startY,
+        0
+    );
+    
+    snowballSprites.push(snowballSprite);
+    guiScene.add(snowballSprite);
+}
+
+
 function fireProjectile(position, direction) {
+    const maxProjectiles = 5;
 
-	const maxProjectiles = 5;
+    // If there are too many projectile, delete the oldest one
+    if (projectiles.length >= maxProjectiles) {
+        const oldestProjectile = projectiles.shift();
+        scene.remove(oldestProjectile.mesh);
+    }
 
-	// If there are too many projectile, delete the oldest one
-	if (projectiles.length >= maxProjectiles) {
-		const projectile = projectiles.shift();
-		scene.remove(projectile.mesh);
-	}
+    // Create a new projectile and add it to the scene
+    let projectile;
 
-	// Create a new projectile and add it to the scene
-	let projectile;
+    switch (index) {
+        case 0:
+            projectile = new Projectile(position, direction, projectileSpeed);
+            break;
+        case 1:
+            projectile = new parabolicProjectile(position, direction, projectileSpeed);
+            break;
+    }
 
-	switch (index) {
-		case 0:
-			projectile = new Projectile(position, direction, projectileSpeed);
-			break;
-		case 1:
-			projectile = new parabolicProjectile(position, direction, projectileSpeed);
-			break;
-	}
-
-	scene.add(projectile.mesh);
-	projectiles.push(projectile);
+    scene.add(projectile.mesh);
+    projectiles.push(projectile);
+    
+    // Add snowbal to UI
+    if (snowballSprites.length < maxProjectiles) {
+        addSnowballToUI();
+    }
 }
 
 //speed of the spotlight that updates over time inside the next function
