@@ -4,6 +4,10 @@ import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/thr
 export function createCharacterSprite(character, texture) {
     console.log("Hola, entro.", character);
 
+    // Clone the texture to prevent sharing UV modifications between sprites
+    const spriteTexture = texture.clone()
+    spriteTexture.needsUpdate = true
+
     const charWidth = 8; // Width of each character in pixels
     const charHeight = 7; // Height of each character in pixels
     const columns = 16; // Number of columns in the texture atlas
@@ -12,8 +16,8 @@ export function createCharacterSprite(character, texture) {
     const paddingY = 2;
 
     // Calculate the effective width and height of each character including padding
-    const effectiveCharWidth = charWidth + paddingX;
-    const effectiveCharHeight = charHeight + paddingY;
+    const totalCharWidth = charWidth + paddingX;
+    const totalCharHeight = charHeight + paddingY;
 
     // Calculate the index of the character in the texture atlas
     let charCode = character.charCodeAt(0);
@@ -30,11 +34,19 @@ export function createCharacterSprite(character, texture) {
     const column = charCode % columns;
     const row = Math.floor(charCode / columns);
 
+    // Calculate UV coordinates
+    // We add a small offset (0.001) to prevent texture bleeding
+    const u = column / columns + 0.001
+    const v = 1 - ((row + 1) * totalCharHeight) / (rows * totalCharHeight)
+    const w = totalCharWidth / (columns * totalCharWidth)
+    const h = charHeight / (rows * totalCharHeight)
+
     // Divides the texture in sections
-    texture.repeat.set(1 / columns, 1 / rows);
-    //texture.repeat.set(charWidth / (columns * effectiveCharWidth), charHeight / (rows * effectiveCharHeight));
     // Picks the correct section
-    texture.offset.set(column / columns, 1 - (row + 1) / rows);
+    spriteTexture.offset.set(u, v);
+    //texture.repeat.set(1 / columns, 1 / rows);
+    spriteTexture.repeat.set(w, h);
+    
 
     //texture.repeat.set(1, 1);
     //texture.offset.set(0, 0);
@@ -42,7 +54,11 @@ export function createCharacterSprite(character, texture) {
     console.log("Character:", character, "Column:", column, "Row:", row, "Offset:", texture.offset, "Repeat:", texture.repeat);
     console.log("Texture Clone:", texture);
 
-    const material = new THREE.SpriteMaterial({ map: texture});
+    const material = new THREE.SpriteMaterial({ 
+        map: spriteTexture,
+        transparent: true,
+    });
+
     const sprite = new THREE.Sprite(material);
     console.log("Material:", sprite.material);
     sprite.scale.set(charWidth*5, charHeight*5, 1); // Adjust the scale as needed

@@ -65,7 +65,7 @@ const textureLoader = new THREE.TextureLoader();
 const numberTexture = textureLoader.load('./static/font8x7.png', () => {
 	console.log('Texture loaded:', numberTexture);
     // Create and add character sprites to the GUI scene
-    const characterSprite = createCharacterSprite('P', numberTexture); // Example: create sprite for character 'A'
+    const characterSprite = createCharacterSprite('Q', numberTexture); // Example: create sprite for character 'A'
     characterSprite.position.set(-window.innerWidth / 2 + textWidth / 2 + textOffset.x, window.innerHeight / 2 - textHeight / 2 - textOffset.y, 0);
     guiScene.add(characterSprite);
 },
